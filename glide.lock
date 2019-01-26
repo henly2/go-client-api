@@ -16,17 +16,6 @@ imports:
   version: 86fed781132ac890ee03e906e4ecd5d6fa180c64
   subpackages:
   - btcec
-- name: github.com/ethereum/go-ethereum
-  version: ccc0debb63124ee99906c2cfff6125de30e8c62f
-  subpackages:
-  - common
-  - common/hexutil
-  - common/math
-  - crypto
-  - crypto/secp256k1
-  - crypto/sha3
-  - log
-  - rlp
 - name: github.com/go-stack/stack
   version: 259ab82a6cad3992b4e21ff5cac294ccb06474bc
 - name: github.com/golang/protobuf
