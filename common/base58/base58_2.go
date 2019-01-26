@@ -1,0 +1,54 @@
+package base58
+
+import (
+	"crypto/sha256"
+	"fmt"
+	"github.com/sasaxie/go-client-api/common/hexutil"
+)
+
+func DecodeCheck2(input string) ([]byte, error) {
+	decodeCheck, err := Decode(input)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(decodeCheck) < 4 {
+		return nil, fmt.Errorf("len < 4")
+	}
+
+	decodeData := decodeCheck[:len(decodeCheck)-4]
+
+	h256h0 := sha256.New()
+	h256h0.Write(decodeData)
+	h0 := h256h0.Sum(nil)
+
+	h256h1 := sha256.New()
+	h256h1.Write(h0)
+	h1 := h256h1.Sum(nil)
+
+	if h1[0] == decodeCheck[len(decodeData)] &&
+		h1[1] == decodeCheck[len(decodeData)+1] &&
+		h1[2] == decodeCheck[len(decodeData)+2] &&
+		h1[3] == decodeCheck[len(decodeData)+3] {
+		return decodeData, nil
+	}
+
+	return nil, fmt.Errorf("verify error")
+}
+
+func AddressToHex(addr string) (string, error) {
+	addrByte, err := DecodeCheck2(addr)
+	if err != nil {
+		return "", err
+	}
+	return hexutil.Encode(addrByte), nil
+}
+
+func HexToAddress(addrHex string) (string, error) {
+	addrByte, err := hexutil.Decode(addrHex)
+	if err != nil {
+		return "", err
+	}
+
+	return EncodeCheck(addrByte), nil
+}

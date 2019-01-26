@@ -15,7 +15,7 @@ import (
 	"time"
 )
 
-const GrpcTimeout = 5 * time.Second
+const GrpcTimeout = 20 * time.Second
 
 type GrpcClient struct {
 	Address string
