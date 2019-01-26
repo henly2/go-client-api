@@ -6,8 +6,6 @@ import (
 	"github.com/sasaxie/go-client-api/common/base58"
 	"github.com/sasaxie/go-client-api/common/hexutil"
 	"github.com/sasaxie/go-client-api/core"
-	"crypto/ecdsa"
-	"github.com/sasaxie/go-client-api/util"
 	"fmt"
 )
 
@@ -130,9 +128,7 @@ func (g *GrpcClient) BuildTransaction(fromAddress, toAddress string,
 	return transferTransaction, nil
 }
 
-func (g *GrpcClient) SignTransaction(ownerKey *ecdsa.PrivateKey, transferTransaction *core.Transaction) error {
-	return util.SignTransaction2(transferTransaction, ownerKey)
-}
+// sign, see util.SignTransaction2
 
 func (g *GrpcClient) PostTransaction(transferTransaction *core.Transaction) (*api.Return, error){
 	ctx, cancel := context.WithTimeout(context.Background(), GrpcTimeout)
