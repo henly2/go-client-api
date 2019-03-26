@@ -2,11 +2,11 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"github.com/sasaxie/go-client-api/api"
 	"github.com/sasaxie/go-client-api/common/base58"
 	"github.com/sasaxie/go-client-api/common/hexutil"
 	"github.com/sasaxie/go-client-api/core"
-	"fmt"
 )
 
 func (g *GrpcClient) ListNodes2() (*api.NodeList, error) {
@@ -103,7 +103,6 @@ func (g *GrpcClient) GetTransactionByInfoId2(id string) (*core.TransactionInfo, 
 	return result, nil
 }
 
-
 // 3 steps supported
 func (g *GrpcClient) BuildTransaction(fromAddress, toAddress string,
 	amount int64) (*core.Transaction, error) {
@@ -128,9 +127,33 @@ func (g *GrpcClient) BuildTransaction(fromAddress, toAddress string,
 	return transferTransaction, nil
 }
 
+func (g *GrpcClient) BuildTokenTransaction(assetId, fromAddress, toAddress string,
+	amount int64) (*api.TransactionExtention, error) {
+
+	transferAssetContract := new(core.TransferAssetContract)
+	transferAssetContract.AssetName = []byte(assetId)
+	transferAssetContract.OwnerAddress = base58.DecodeCheck(fromAddress)
+	transferAssetContract.ToAddress = base58.DecodeCheck(toAddress)
+	transferAssetContract.Amount = amount
+
+	ctx, cancel := context.WithTimeout(context.Background(), GrpcTimeout)
+	defer cancel()
+
+	transferTransaction, err := g.Client.TransferAsset2(ctx, transferAssetContract)
+	if err != nil {
+		return nil, err
+	}
+
+	if transferTransaction == nil || transferTransaction.Transaction == nil || len(transferTransaction.Transaction.GetRawData().GetContract()) == 0 {
+		return nil, fmt.Errorf("transfer error: invalid transaction")
+	}
+
+	return transferTransaction, nil
+}
+
 // sign, see util.SignTransaction2
 
-func (g *GrpcClient) PostTransaction(transferTransaction *core.Transaction) (*api.Return, error){
+func (g *GrpcClient) PostTransaction(transferTransaction *core.Transaction) (*api.Return, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), GrpcTimeout)
 	defer cancel()
 
