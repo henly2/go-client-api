@@ -6,6 +6,8 @@ import (
 	"github.com/sasaxie/go-client-api/common/hexutil"
 	"bytes"
 	"fmt"
+	"github.com/ethereum/go-ethereum/common/math"
+	"encoding/hex"
 )
 
 const TestAddressPrefix = "a0"
@@ -52,4 +54,9 @@ func VerifyAddress(data []byte) error {
 	}
 
 	return nil
+}
+
+func PrivateKeyToHex(privateKey *ecdsa.PrivateKey) (string) {
+	priKeyData := math.PaddedBigBytes(privateKey.D, 32)
+	return hex.EncodeToString(priKeyData)
 }
